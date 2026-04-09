@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글로벌 인사 탐험대</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #f7f3e9;
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 70vh;
+            min-height: 500px;
+            background-image: url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=2066&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            border: 10px solid #5d4037;
+            border-radius: 40px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        }
+        .pin {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+        .pin:hover {
+            transform: scale(1.2) translateY(-10px);
+            z-index: 50;
+        }
+        .flag {
+            width: 60px;
+            height: 42px;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            object-fit: cover;
+        }
+        .country-name {
+            background: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 800;
+            margin-top: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            white-space: nowrap;
+        }
+        .action-visual-box {
+            width: 100%;
+            height: 320px;
+            background-color: #ffffff;
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid #e0f2fe;
+            position: relative;
+        }
+        .action-visual-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            display: block;
+        }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- Intro Page -->
+    <div id="introPage" class="flex min-h-screen flex-col items-center justify-center p-8 text-center bg-[#2c3e50] text-white">
+        <div class="max-w-lg w-full">
+            <div class="text-9xl mb-10 drop-shadow-2xl">🌍</div>
+            <h1 class="text-6xl font-extrabold mb-6 tracking-tight">글로벌 인사 탐험대</h1>
+            <p class="text-2xl font-light mb-12 opacity-90">지도를 클릭해 친구들의<br>특별한 인사법을 배워보세요!</p>
+            <button onclick="showPage('mapPage')" class="w-full bg-[#f1c40f] hover:bg-[#f39c12] text-[#2c3e50] font-black py-7 px-10 rounded-[35px] text-3xl shadow-[0_10px_0_rgb(180,130,0)] transition-all active:translate-y-2 active:shadow-none">
+                탐험 시작하기
+            </button>
+        </div>
+    </div>
+
+    <!-- Map Page -->
+    <div id="mapPage" class="hidden min-h-screen p-6 flex-col items-center bg-[#fdfaf3]">
+        <div class="w-full max-w-6xl flex flex-col h-full">
+            <header class="flex justify-between items-center mb-8">
+                <button onclick="location.reload()" class="bg-white text-gray-700 px-6 py-3 rounded-2xl font-bold shadow-sm hover:bg-gray-100 transition-colors border border-gray-200">← 처음으로</button>
+                <h2 class="text-4xl font-black text-[#5d4037] tracking-tight text-center">세계 인사 지도 🧭</h2>
+                <div class="bg-blue-600 px-6 py-3 rounded-2xl shadow-lg font-black text-white">
+                    수집함: <span id="visitedCount" class="text-2xl">0</span>/8
+                </div>
+            </header>
+
+            <div class="map-container">
+                <div class="pin" style="top: 28%; left: 81%;" onclick="showInfo('korea')">
+                    <img src="https://flagcdn.com/w80/kr.png" class="flag"><span class="country-name">대한민국</span>
+                </div>
+                <div class="pin" style="top: 52%; left: 74%;" onclick="showInfo('india')">
+                    <img src="https://flagcdn.com/w80/in.png" class="flag"><span class="country-name">인도</span>
+                </div>
+                <div class="pin" style="top: 42%; left: 63%;" onclick="showInfo('israel')">
+                    <img src="https://flagcdn.com/w80/il.png" class="flag"><span class="country-name">이스라엘</span>
+                </div>
+                <div class="pin" style="top: 62%; left: 79%;" onclick="showInfo('thailand')">
+                    <img src="https://flagcdn.com/w80/th.png" class="flag"><span class="country-name">태국</span>
+                </div>
+                <div class="pin" style="top: 30%; left: 77%;" onclick="showInfo('mongolia')">
+                    <img src="https://flagcdn.com/w80/mn.png" class="flag"><span class="country-name">몽골</span>
+                </div>
+                <div class="pin" style="top: 35%; left: 52%;" onclick="showInfo('france')">
+                    <img src="https://flagcdn.com/w80/fr.png" class="flag"><span class="country-name">프랑스</span>
+                </div>
+                <div class="pin" style="top: 48%; left: 16%;" onclick="showInfo('hawaii')">
+                    <img src="https://flagcdn.com/w80/us.png" class="flag"><span class="country-name">하와이</span>
+                </div>
+                <div class="pin" style="top: 82%; left: 91%;" onclick="showInfo('newzealand')">
+                    <img src="https://flagcdn.com/w80/nz.png" class="flag"><span class="country-name">뉴질랜드</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-[200] backdrop-blur-xl">
+        <div class="bg-white rounded-[50px] max-w-5xl w-full overflow-hidden shadow-2xl flex flex-col md:flex-row h-auto max-h-[90vh]">
+            
+            <div class="md:w-1/2 p-10 flex flex-col bg-white">
+                <div id="modalHeaderBase" class="rounded-[40px] p-6 text-white text-center mb-8 relative shadow-xl">
+                    <img id="modalFlag" src="" class="w-24 mx-auto rounded-2xl shadow-md mb-4 border-4 border-white">
+                    <h3 id="modalCountry" class="text-4xl font-black tracking-tighter">국가명</h3>
+                </div>
+                <div class="action-visual-box" id="modalVisualContent">
+                    <!-- 이미지가 여기에 삽입됩니다 -->
+                </div>
+                <p class="text-center mt-6 text-blue-600 font-black text-lg">친구들의 인사 동작을 따라해봐요!</p>
+            </div>
+            
+            <div class="md:w-1/2 flex flex-col bg-[#fcfcfc]">
+                <div class="p-8 md:p-10 overflow-y-auto custom-scroll flex-grow">
+                    <div class="space-y-8">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-sm font-black text-blue-500 uppercase tracking-widest">Global Manner Study</span>
+                                <h4 class="text-2xl font-black text-gray-800 mt-1">이 나라의 인사말은?</h4>
+                            </div>
+                            <button onclick="closeModal()" class="text-gray-300 text-5xl leading-none hover:text-gray-500 transition-colors">&times;</button>
+                        </div>
+
+                        <div class="bg-blue-600 p-8 rounded-[40px] text-center shadow-2xl shadow-blue-200 transform -rotate-1">
+                            <p id="modalGreeting" class="text-3xl md:text-4xl font-black text-white leading-tight whitespace-pre-line">인사말</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                                <h5 class="text-blue-600 font-black mb-2 text-lg italic">어떻게 하나요?</h5>
+                                <p id="modalMethod" class="text-xl text-gray-700 font-bold leading-relaxed">방법 설명</p>
+                            </div>
+                            <div class="bg-yellow-50 p-6 rounded-3xl border-2 border-dashed border-yellow-300">
+                                <h5 class="text-yellow-700 font-black mb-2 text-lg italic">탐험 포인트!</h5>
+                                <p id="modalAction" class="text-2xl font-black text-yellow-900">핵심 포인트</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-white border-t border-gray-100">
+                    <button onclick="closeModal()" class="w-full bg-[#2c3e50] text-white py-6 rounded-[30px] text-2xl font-black shadow-xl hover:bg-black transition-all transform active:scale-95">탐험 계속하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const visited = new Set();
+        
+        const countries = {
+            korea: {
+                name: '대한민국',
+                greeting: '안녕하세요\n(Annyeonghaseyo)',
+                method: '허리를 공손히 숙여 상대방에게 정중함을 표현합니다.',
+                action: '🙇‍♂️ 허리 숙여 인사하기',
+                color: 'bg-[#CD2E3A]',
+                flag: 'https://flagcdn.com/w160/kr.png',
+                img: 'https://images.unsplash.com/photo-1590644365607-1c5a519a7a37?q=80&w=500&auto=format&fit=crop' // 임시 한국 이미지
+            },
+            india: {
+                name: '인도',
+                greeting: '나마스테\n(Namaste / नमस्ते)',
+                method: '가슴 앞에 두 손을 모으고 고개를 살짝 숙이며 인사합니다.',
+                action: '🙏 두 손 모아 합장하기',
+                color: 'bg-[#FF9933]',
+                flag: 'https://flagcdn.com/w160/in.png',
+                img: 'image_6706b3.png' // 업로드하신 이미지
+            },
+            israel: {
+                name: '이스라엘',
+                greeting: '샬롬\n(Shalom / שָׁלוֹם)',
+                method: "상대방의 어깨를 가볍게 두드리며 '평화'의 뜻을 전합니다.",
+                action: '🤝 어깨 가볍게 두드리기',
+                color: 'bg-[#0038b8]',
+                flag: 'https://flagcdn.com/w160/il.png',
+                img: 'image_67097c.png' // 업로드하신 이미지
+            },
+            france: {
+                name: '프랑스',
+                greeting: '봉쥬르\n(Bonjour)',
+                method: "양쪽 볼을 가볍게 맞대며 입으로 '쪽' 소리를 내는 '라 비즈'를 합니다.",
+                action: '😘 볼 맞대며 인사하기',
+                color: 'bg-[#0055A4]',
+                flag: 'https://flagcdn.com/w160/fr.png',
+                img: 'https://images.unsplash.com/photo-1503917988258-f19772f44c67?q=80&w=500&auto=format&fit=crop'
+            },
+            hawaii: {
+                name: '하와이',
+                greeting: '알로하\n(Aloha)',
+                method: "엄지와 새끼손가락만 펴서 흔드는 '샤카' 사인을 보냅니다.",
+                action: '🤙 샤카 손모양 흔들기',
+                color: 'bg-[#FFB300]',
+                flag: 'https://flagcdn.com/w160/us.png',
+                img: 'https://images.unsplash.com/photo-1598330041997-e0399f36894e?q=80&w=500&auto=format&fit=crop'
+            },
+            newzealand: {
+                name: '뉴질랜드',
+                greeting: '키 오라\n(Kia Ora)',
+                method: "마오리족의 '홍이' 인사법! 서로의 코를 두 번 살짝 맞댑니다.",
+                action: '👃 코를 살짝 맞대기',
+                color: 'bg-[#00247D]',
+                flag: 'https://flagcdn.com/w160/nz.png',
+                img: 'https://images.unsplash.com/photo-1589308454676-9694709d0124?q=80&w=500&auto=format&fit=crop'
+            },
+            thailand: {
+                name: '태국',
+                greeting: '사와디캅\n(Sawadee Kap / สวัสดี)',
+                method: "합장한 손을 코 끝 높이까지 올리며 고개를 숙입니다.",
+                action: '🙏 코 높이에서 합장하기',
+                color: 'bg-[#ED1C24]',
+                flag: 'https://flagcdn.com/w160/th.png',
+                img: 'https://images.unsplash.com/photo-1528181304800-2f143c8c798d?q=80&w=500&auto=format&fit=crop'
+            },
+            mongolia: {
+                name: '몽골',
+                greeting: '새-응 배-노\n(Sain baina uu)',
+                method: "존경의 표시로 어르신의 팔꿈치를 두 손으로 정성껏 받칩니다.",
+                action: '🤲 팔꿈치 받쳐 들기',
+                color: 'bg-[#0066B3]',
+                flag: 'https://flagcdn.com/w160/mn.png',
+                img: 'https://images.unsplash.com/photo-1526481280693-3bfa75ac88b1?q=80&w=500&auto=format&fit=crop'
+            }
+        };
+
+        function showPage(pageId) {
+            document.getElementById('introPage').classList.add('hidden');
+            document.getElementById('mapPage').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function showInfo(countryKey) {
+            const data = countries[countryKey];
+            document.getElementById('modalCountry').innerText = data.name;
+            document.getElementById('modalGreeting').innerText = data.greeting;
+            document.getElementById('modalMethod').innerText = data.method;
+            document.getElementById('modalAction').innerText = data.action;
+            document.getElementById('modalFlag').src = data.flag;
+            
+            const visualBox = document.getElementById('modalVisualContent');
+            visualBox.innerHTML = `<img src="${data.img}" alt="${data.name} 인사법" id="greetingImage">`;
+
+            document.getElementById('modalHeaderBase').className = `rounded-[40px] p-6 text-white text-center mb-8 relative shadow-xl ${data.color}`;
+            document.getElementById('modal').classList.remove('hidden');
+            
+            visited.add(countryKey);
+            document.getElementById('visitedCount').innerText = visited.size;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        window.onclick = function(event) {
+            if (event.target.id === 'modal') closeModal();
+        }
+    </script>
+</body>
+</html>
